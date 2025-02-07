@@ -29,9 +29,18 @@ class TodosScreen extends StatelessWidget {
                   "ID: ${todo.tno}", // ✅ ID 개별 표시
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
                 ),
+                Icon(
+                  todo.complete ? Icons.check_circle : Icons.circle_outlined,
+                  color: todo.complete ? Colors.green : Colors.grey,
+                  size: 24,
+                ),
                 Text(
-                  todo.description,
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  todo.complete ? '완료' : '미완료',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: todo.complete ? Colors.black : Colors.grey,
+                    decoration: todo.complete ? TextDecoration.lineThrough : TextDecoration.none,
+                  ),
                 ),
               ],
             ),

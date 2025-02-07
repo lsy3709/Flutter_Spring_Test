@@ -1,4 +1,4 @@
-import 'package:dart_test/ch6_spring_mini_test/details_screen.dart';
+import 'package:dart_test/ch6_spring_mini_test/screen/details_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/login_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/main_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/signup_screen.dart';

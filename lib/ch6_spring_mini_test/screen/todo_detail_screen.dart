@@ -87,6 +87,7 @@ class _TodoDetailScreenState extends State<TodoDetailScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: _writerController,
+              enabled: false, // 완전 비활성화 (회색 UI)
               decoration: const InputDecoration(labelText: "작성자"),
             ),
             const SizedBox(height: 16),
