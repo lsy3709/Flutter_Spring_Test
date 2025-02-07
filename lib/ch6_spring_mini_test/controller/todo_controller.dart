@@ -91,7 +91,7 @@ class TodoController extends ChangeNotifier {
   }
 
   // ✅ Todo 수정 요청 (`PUT /api/todo/{tno}`)
-  Future<bool> updateTodo(int tno, String title, String writer, DateTime dueDate, bool completed) async {
+  Future<bool> updateTodo(int tno, String title, String writer, DateTime dueDate, bool complete) async {
     String? accessToken = await secureStorage.read(key: "accessToken");
     if (accessToken == null) return false;
 
@@ -101,8 +101,9 @@ class TodoController extends ChangeNotifier {
       "tno": tno,
       "title": title,
       "writer": writer,
-      "dueDate": "${dueDate.year}-${dueDate.month}-${dueDate.day}",
-      "completed": completed,
+      "dueDate": "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}", // ✅ 날짜 포맷 수정
+      "complete": complete,
+      "complete": complete,
     };
 
     try {
@@ -114,12 +115,17 @@ class TodoController extends ChangeNotifier {
         },
         body: jsonEncode(updateData),
       );
+      print("📢 [Flutter] 응답 코드: ${response.statusCode}");
+      print("📢 [Flutter] 응답 바디: ${response.body}");
+
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        print("⚠️ [Flutter] 서버 응답 오류: ${response.body}");
       }
     } catch (e) {
-      print("네트워크 오류: $e");
+      print("❌ [Flutter] 네트워크 오류: $e");
     }
     return false;
   }
