@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../controller/LoginController.dart';
+import '../controller/login_controller.dart';
 import 'package:provider/provider.dart';
+
+import '../controller/todo_controller.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -30,6 +32,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final loginController = context.watch<LoginController>();
+    final todoController = context.watch<TodoController>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('메인 화면'),
@@ -55,14 +58,26 @@ class _MainScreenState extends State<MainScreen> {
               onPressed: () => Navigator.pushNamed(context, '/signup'),
               child: const Text('회원 가입'),
             ),
+            const SizedBox(height: 10),
             OutlinedButton(
               onPressed: () => Navigator.pushNamed(context, '/login'),
               child: const Text('로그인'),
             ),
-            OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/details'),
-              child: const Text('상세화면'),
-            ),
+            // const SizedBox(height: 10),
+            // OutlinedButton(
+            //   onPressed: () => Navigator.pushNamed(context, '/details'),
+            //   child: const Text('상세화면'),
+            // ),
+            const SizedBox(height: 10),
+
+            if (loginController.isLoggedIn)
+              ElevatedButton(
+                onPressed: () {
+                  todoController.fetchTodos(); // Todos 데이터 요청
+                  Navigator.pushNamed(context, "/todos"); // Todos 화면으로 이동
+                },
+                child: const Text("Todos 조회"),
+              ),
           ],
         ),
       ),

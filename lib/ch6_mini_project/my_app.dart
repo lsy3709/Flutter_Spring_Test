@@ -1,8 +1,8 @@
-import 'package:dart_test/ch6_mini_project/screen/DetailsScreen.dart';
-import 'package:dart_test/ch6_mini_project/screen/LoginScreen.dart';
-import 'package:dart_test/ch6_mini_project/screen/MainScreen.dart';
-import 'package:dart_test/ch6_mini_project/screen/SignupScreen.dart';
-import 'package:dart_test/ch6_mini_project/screen/SplashScreen.dart';
+import 'package:dart_test/ch6_mini_project/screen/details_screen.dart';
+import 'package:dart_test/ch6_mini_project/screen/login_screen.dart';
+import 'package:dart_test/ch6_mini_project/screen/main_screen.dart';
+import 'package:dart_test/ch6_mini_project/screen/signup_screen.dart';
+import 'package:dart_test/ch6_mini_project/screen/splash_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../../ch6_spring_mini_test/screen/MainScreen.dart';
+import '../../ch6_spring_mini_test/screen/main_screen.dart';
 
 class LoginController extends ChangeNotifier {
   final TextEditingController idController = TextEditingController();

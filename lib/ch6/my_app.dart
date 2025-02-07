@@ -1,4 +1,4 @@
-import 'package:dart_test/ch6/widgetJoin.dart';
+import 'package:dart_test/ch6/widget_join.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
