@@ -49,10 +49,10 @@ class TodosScreen extends StatelessWidget {
                     );
                   },
                 ),
-                // ✅ 완료 여부 아이콘
-                Icon(
-                  todo.complete ? Icons.check_circle : Icons.cancel,
-                  color: todo.complete ? Colors.green : Colors.red,
+                // ✅ 삭제 버튼 (삭제 확인 다이얼로그 호출)
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => todoController.confirmDelete(context, todo.tno),
                 ),
               ],
             ),

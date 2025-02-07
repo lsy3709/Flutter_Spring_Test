@@ -78,7 +78,7 @@ class _TodoDetailScreenState extends State<TodoDetailScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: ListView(
           children: [
             TextField(
               controller: _titleController,

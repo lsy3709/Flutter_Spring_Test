@@ -120,6 +120,11 @@ class TodoController extends ChangeNotifier {
 
 
       if (response.statusCode == 200) {
+        print("✅ [Flutter] Todo 수정 성공!");
+
+        // ✅ 리스트 새로고침
+        await fetchTodos(); // ✅ Todo 리스트 다시 불러오기
+        notifyListeners(); // ✅ UI 업데이트
         return true;
       } else {
         print("⚠️ [Flutter] 서버 응답 오류: ${response.body}");
@@ -129,6 +134,74 @@ class TodoController extends ChangeNotifier {
     }
     return false;
   }
+
+  Future<bool> deleteTodo(int tno) async {
+    String? accessToken = await secureStorage.read(key: "accessToken");
+    if (accessToken == null) {
+      print("⚠️ [Flutter] accessToken 없음!");
+      return false;
+    }
+
+    final Uri requestUrl = Uri.parse("$serverIp/$tno");
+    print("📢 [Flutter] DELETE 요청 URL: $requestUrl");
+
+    try {
+      final response = await http.delete(
+        requestUrl,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $accessToken",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print("✅ [Flutter] Todo 삭제 성공!");
+
+        // ✅ 리스트 새로고침
+        await fetchTodos(); // ✅ UI 업데이트
+        notifyListeners();
+
+        return true;
+      } else {
+        print("⚠️ [Flutter] 삭제 실패: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ [Flutter] 네트워크 오류: $e");
+    }
+    return false;
+  }
+  // ✅ 삭제 확인 다이얼로그 (UI에서 호출)
+  void confirmDelete(BuildContext context, int tno) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("삭제 확인"),
+          content: const Text("정말 삭제하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("취소"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // ✅ 다이얼로그 닫기
+                bool success = await deleteTodo(tno);
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("삭제되었습니다.")),
+                  );
+                }
+              },
+              child: const Text("삭제", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 
 }
 
