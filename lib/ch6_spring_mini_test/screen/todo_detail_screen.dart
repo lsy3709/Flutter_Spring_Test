@@ -20,7 +20,7 @@ class _TodoDetailScreenState extends State<TodoDetailScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _writerController = TextEditingController();
   DateTime? _dueDate;
-  bool _completed = false;
+  bool _complete = false;
   bool isLoading = true;
 
   @override
@@ -39,7 +39,7 @@ class _TodoDetailScreenState extends State<TodoDetailScreen> {
         _titleController.text = todo.title;
         _writerController.text = todo.writer;
         _dueDate = todo.dueDate;
-        _completed = todo.completed;
+        _complete = todo.complete;
         isLoading = false;
       });
     } else {
@@ -59,7 +59,7 @@ class _TodoDetailScreenState extends State<TodoDetailScreen> {
       _titleController.text,
       _writerController.text,
       _dueDate!,
-      _completed,
+      _complete,
     );
 
     if (success) {
@@ -117,10 +117,10 @@ class _TodoDetailScreenState extends State<TodoDetailScreen> {
             const SizedBox(height: 16),
             CheckboxListTile(
               title: const Text("완료"),
-              value: _completed,
+              value: _complete,
               onChanged: (value) {
                 setState(() {
-                  _completed = value!;
+                  _complete = value!;
                 });
               },
             ),

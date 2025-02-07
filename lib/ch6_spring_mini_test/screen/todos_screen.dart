@@ -22,7 +22,19 @@ class TodosScreen extends StatelessWidget {
           final todo = todoController.todos[index];
           return ListTile(
             title: Text(todo.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            subtitle: Text(todo.description, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "ID: ${todo.tno}", // ✅ ID 개별 표시
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
+                ),
+                Text(
+                  todo.description,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -33,14 +45,14 @@ class TodosScreen extends StatelessWidget {
                     Navigator.pushNamed(
                       context,
                       "/todoDetail",
-                      arguments: todo.id, // ✅ tno 전달
+                      arguments: todo.tno, // ✅ tno 전달
                     );
                   },
                 ),
                 // ✅ 완료 여부 아이콘
                 Icon(
-                  todo.completed ? Icons.check_circle : Icons.cancel,
-                  color: todo.completed ? Colors.green : Colors.red,
+                  todo.complete ? Icons.check_circle : Icons.cancel,
+                  color: todo.complete ? Colors.green : Colors.red,
                 ),
               ],
             ),

@@ -1,41 +1,43 @@
 class TodoDTO {
-  final int id;
+  final int tno; // ✅ id → tno 변경
   final String title;
   final String description;
-  final String writer; // ✅ 작성자 추가
-  final DateTime dueDate; // ✅ 마감일 추가
-  final bool completed;
+  final String writer;
+  final DateTime dueDate; // ✅ Spring Boot의 LocalDate와 맞춤
+  final bool complete; // ✅ completed → complete 변경
 
   TodoDTO({
-    required this.id,
+    required this.tno,
     required this.title,
     required this.description,
-    required this.writer, // ✅ 작성자 필수
-    required this.dueDate, // ✅ 마감일 필수
-    required this.completed,
+    required this.writer,
+    required this.dueDate,
+    required this.complete,
   });
 
+  // ✅ JSON → TodoDTO 변환
   factory TodoDTO.fromJson(Map<String, dynamic> json) {
     return TodoDTO(
-      id: json['id'] ?? 0, // 기본값 0
-      title: json['title'] ?? "제목 없음", // 기본값 제공
-      description: json['description'] ?? "설명 없음", // 기본값 제공
-      writer: json['writer'] ?? "알 수 없음", // ✅ 기본값 추가
+      tno: json['tno'] ?? 0, // ✅ id → tno로 변경
+      title: json['title'] ?? "제목 없음",
+      description: json['description'] ?? "설명 없음",
+      writer: json['writer'] ?? "알 수 없음",
       dueDate: json['dueDate'] != null
-          ? DateTime.parse(json['dueDate']) // ✅ 날짜 변환
-          : DateTime.now(), // 기본값: 현재 날짜
-      completed: json['completed'] ?? false, // 기본값 제공
+          ? DateTime.parse(json['dueDate']) // ✅ LocalDate 변환
+          : DateTime.now(),
+      complete: json['complete'] ?? false, // ✅ completed → complete로 변경
     );
   }
 
+  // ✅ TodoDTO → JSON 변환
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
+      "tno": tno, // ✅ 서버의 필드명과 일치
       "title": title,
       "description": description,
-      "writer": writer, // ✅ 추가
-      "dueDate": dueDate.toIso8601String(), // ✅ ISO 8601 포맷 변환
-      "completed": completed,
+      "writer": writer,
+      "dueDate": "${dueDate.year}-${dueDate.month}-${dueDate.day}", // ✅ `yyyy-MM-dd` 형식 변환
+      "complete": complete, // ✅ completed → complete 변경
     };
   }
 }
