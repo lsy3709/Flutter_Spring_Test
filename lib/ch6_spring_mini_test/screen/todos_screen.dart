@@ -4,8 +4,42 @@ import 'package:provider/provider.dart';
 import '../controller/todo_controller.dart';
 
 
-class TodosScreen extends StatelessWidget {
+class TodosScreen extends StatefulWidget {
   const TodosScreen({super.key});
+
+  @override
+  _TodosScreenState createState() => _TodosScreenState();
+}
+
+class _TodosScreenState extends State<TodosScreen> {
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    final todoController = context.read<TodoController>();
+
+    // 빌드 이후에 실행되도록 조정
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TodoController>().fetchTodos();
+    });
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent &&
+          !todoController.isFetchingMore) {
+        // ✅ 스크롤이 맨 아래에 도달하면 추가 데이터 요청
+        todoController.fetchMoreTodos();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +52,36 @@ class TodosScreen extends StatelessWidget {
           : todoController.todos.isEmpty
           ? const Center(child: Text("할 일이 없습니다."))
           : ListView.builder(
-        itemCount: todoController.todos.length,
+        controller: _scrollController,
+        itemCount: todoController.todos.length + (todoController.hasMore ? 1 : 0), // ✅ 로딩 아이템 추가,
         itemBuilder: (context, index) {
+
+          if (index == todoController.todos.length) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: CircularProgressIndicator(), // ✅ 로딩 UI 추가
+              ),
+            );
+          }
+
           final todo = todoController.todos[index];
           return ListTile(
             title: Text(todo.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "ID: ${todo.tno}", // ✅ ID 개별 표시
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
+                Row(
+                  children: [
+                    Text(
+                      "ID: ${todo.tno}", // ✅ ID 개별 표시
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
+                    ),
+                    Text(
+                      ", 작성자: ${todo.writer}", // ✅ ID 개별 표시
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
+                    ),
+                  ],
                 ),
                 Icon(
                   todo.complete ? Icons.check_circle : Icons.circle_outlined,
