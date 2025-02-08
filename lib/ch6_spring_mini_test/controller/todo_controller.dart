@@ -14,6 +14,11 @@ class TodoController extends ChangeNotifier {
   List<TodoDTO> todos = [];
   bool isLoading = false;
 
+  // ✅ 로그인한 사용자 ID 가져오기
+  Future<String?> getLoggedInUserId() async {
+    return await secureStorage.read(key: "mid"); // 보안 저장소에서 유저 ID 가져오기
+  }
+
   // Todos 리스트 조회 요청
   Future<void> fetchTodos() async {
     isLoading = true;
@@ -201,7 +206,53 @@ class TodoController extends ChangeNotifier {
     );
   }
 
+// ✅ Todo 작성 요청 (`POST /api/todo`)
+  Future<bool> createTodo(String title, DateTime dueDate, bool complete) async {
+    String? accessToken = await secureStorage.read(key: "accessToken");
+    String? mid = await getLoggedInUserId(); // 로그인한 사용자 ID 가져오기
 
+    if (accessToken == null || mid == null) {
+      print("⚠️ [Flutter] 액세스 토큰 또는 사용자 ID 없음");
+      return false;
+    }
+
+    final Uri requestUrl = Uri.parse("$serverIp/");
+
+    final Map<String, dynamic> postData = {
+      "title": title,
+      "writer": mid, // ✅ 로그인한 사용자 ID 자동 입력
+      "dueDate": "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}",
+      "complete": complete,
+    };
+
+    try {
+      final response = await http.post(
+        requestUrl,
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          "Authorization": "Bearer $accessToken",
+        },
+        body: jsonEncode(postData),
+      );
+
+      print("📢 [Flutter] 응답 코드: ${response.statusCode}");
+      print("📢 [Flutter] 응답 바디: ${response.body}");
+
+      if (response.statusCode == 200) {
+        print("✅ [Flutter] Todo 작성 성공!");
+
+        // ✅ 리스트 새로고침
+        await fetchTodos();
+        notifyListeners();
+        return true;
+      } else {
+        print("⚠️ [Flutter] 서버 응답 오류: ${response.body}");
+      }
+    } catch (e) {
+      print("❌ [Flutter] 네트워크 오류: $e");
+    }
+    return false;
+  }
 
 }
 

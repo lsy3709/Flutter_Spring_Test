@@ -1,3 +1,4 @@
+import 'package:dart_test/ch6_spring_mini_test/screen/todo_create_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controller/todo_controller.dart';
@@ -67,6 +68,15 @@ class TodosScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const TodoCreateScreen()),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
