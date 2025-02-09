@@ -43,49 +43,58 @@ class SignupScreen extends StatelessWidget {
               const SizedBox(height: 16),
 
               // 패스워드 입력 필드
-              TextField(
-                controller: signupController.passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: '패스워드',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: signupController.isPasswordMatch ? Colors.green : Colors.red,
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: signupController.isPasswordMatch ? Colors.green : Colors.red,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-                onChanged: (value) => signupController.validatePassword(),
-              ),
-              const SizedBox(height: 16),
+      TextField(
+        controller: signupController.passwordController,
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: '패스워드',
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: signupController.passwordController.text.isNotEmpty
+                  ? (signupController.isPasswordMatch ? Colors.green : Colors.red)
+                  : Colors.grey, // ✅ 입력이 없을 때 기본 색상 유지
+              width: 2.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: signupController.passwordController.text.isNotEmpty
+                  ? (signupController.isPasswordMatch ? Colors.green : Colors.red)
+                  : Colors.grey, // ✅ 입력이 없을 때 기본 색상 유지
+              width: 2.0,
+            ),
+          ),
+        ),
+        onChanged: (value) => signupController.validatePassword(),
+      ),
+      const SizedBox(height: 16),
 
-              // 패스워드 확인 입력 필드
-              TextField(
-                controller: signupController.passwordConfirmController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: '패스워드 확인',
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: signupController.isPasswordMatch ? Colors.green : Colors.red,
-                      width: 2.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: signupController.isPasswordMatch ? Colors.green : Colors.red,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-                onChanged: (value) => signupController.validatePassword(),
-              ),
+// ✅ 패스워드 확인 입력 필드
+      TextField(
+        controller: signupController.passwordConfirmController,
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: '패스워드 확인',
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: signupController.passwordConfirmController.text.isNotEmpty
+                  ? (signupController.isPasswordMatch ? Colors.green : Colors.red)
+                  : Colors.grey, // ✅ 입력이 없을 때 기본 색상 유지
+              width: 2.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: signupController.passwordConfirmController.text.isNotEmpty
+                  ? (signupController.isPasswordMatch ? Colors.green : Colors.red)
+                  : Colors.grey, // ✅ 입력이 없을 때 기본 색상 유지
+              width: 2.0,
+            ),
+          ),
+        ),
+        onChanged: (value) => signupController.validatePassword(),
+      ),
+
               const SizedBox(height: 16),
 
               // 회원 가입 버튼
