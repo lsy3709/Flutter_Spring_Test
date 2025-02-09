@@ -81,7 +81,12 @@ class _TodosScreenState extends State<TodosScreen> {
                       ", 작성자: ${todo.writer}", // ✅ ID 개별 표시
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
                     ),
+
                   ],
+                ),
+                Text(
+                  "작성일: ${todo.formattedDueDate}", // ✅ ID 개별 표시
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
                 ),
                 Icon(
                   todo.complete ? Icons.check_circle : Icons.circle_outlined,

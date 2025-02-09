@@ -6,7 +6,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../dto/page_response_dto.dart';
 import '../dto/todo_dto.dart';
 
-
 class TodoController extends ChangeNotifier {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   final String serverIp = "http://192.168.219.103:8080/api/todo"; // 서버 주소
@@ -16,10 +15,14 @@ class TodoController extends ChangeNotifier {
   bool isFetchingMore = false; // ✅ 추가 데이터 로드 중 여부
   bool hasMore = true; // ✅ 추가 데이터 여부 확인
 
-  int currentPage = 1;
-  int pageSize = 10;
-  int total = 0; // 전체 데이터 개수
+  // 페이징_기반_코드
+  // int currentPage = 1;
+  // int pageSize = 10;
+  // int total = 0; // 전체 데이터 개수
 
+  // 커서_기반_코드
+  int? lastCursorId; // ✅ 마지막 아이템 ID (커서)
+  int remainingCount = 10; // ✅ 최초 호출 이후 줄여나갈 데이터 개수
 
   // ✅ 로그인한 사용자 ID 가져오기
   Future<String?> getLoggedInUserId() async {
@@ -27,9 +30,14 @@ class TodoController extends ChangeNotifier {
   }
 
   // Todos 리스트 조회 요청
-  Future<void> fetchTodos({int page = 1}) async {
+  Future<void> fetchTodos() async {
     isLoading = true;
-    currentPage = page;
+
+    // 커서_기반_코드
+    lastCursorId = null; // ✅ 커서를 초기화
+    remainingCount = 0;  //  ✅ 최초에는 전체 개수를 먼저 가져옴
+    // 페이징_기반_코드
+    // currentPage = 1;
     hasMore = true; // ✅ 처음 로드할 때 더 많은 데이터가 있다고 가정
     notifyListeners();
 
@@ -42,11 +50,20 @@ class TodoController extends ChangeNotifier {
       return;
     }
 
+    print("📢 [Flutter] fetchTodos() 최초 호출: cursor=null, 전체 개수 요청");
+
+
     // ✅ PageRequestDTO 데이터를 쿼리 파라미터로 변환
     final Uri requestUrl = Uri.parse(
-      "$serverIp/list?page=$currentPage&size=$pageSize&type=&keyword=&from=&to=&completed=",
-    );
+      // 페이징_기반_코드
+      // "$serverIp/list?page=$currentPage&size=$pageSize&type=&keyword=&from=&to=&completed=",
+      // 커서_기반_코드
+      // "$serverIp/list2?size=10${lastCursorId != null ? '&cursor=$lastCursorId' : ''}",
 
+      // ✅ 최초 호출에서는 전체 개수를 가져오기 위해 size=0
+      "$serverIp/list2?size=10",
+
+    );
 
     try {
       final response = await http.get(
@@ -55,7 +72,6 @@ class TodoController extends ChangeNotifier {
           "Content-Type": "application/json; charset=UTF-8",
           "Authorization": "Bearer $accessToken",
         },
-
       );
 
       if (response.statusCode == 200) {
@@ -65,9 +81,22 @@ class TodoController extends ChangeNotifier {
           (json) => TodoDTO.fromJson(json),
         );
 
-        todos = pageResponse.dtoList;
-        total = pageResponse.total; // ✅ 전체 데이터 개수 설정
-        hasMore = pageResponse.dtoList.isNotEmpty; // ✅ 다음 데이터 존재 여부 확인
+        // 페이징_기반_코드
+        // todos = pageResponse.dtoList;
+        // total = pageResponse.total; // ✅ 전체 데이터 개수 설정
+        // hasMore = pageResponse.dtoList.isNotEmpty; // ✅ 다음 데이터 존재 여부 확인
+
+        // 커서_기반_코드
+        if (pageResponse.dtoList.isNotEmpty) {
+          todos = pageResponse.dtoList; // ✅ 최초 10개 데이터 추가
+          lastCursorId = pageResponse.nextCursor; // ✅ 다음 커서 업데이트
+          hasMore = pageResponse.hasNext; // ✅ 다음 데이터 여부 확인
+          remainingCount = pageResponse.total - todos.length; // ✅ 전체 개수 - 받은 데이터 개수
+          print("✅ [Flutter] 전체 개수: ${pageResponse.total}, 남은 개수: $remainingCount");
+        } else {
+          lastCursorId = null; // ✅ 만약 데이터가 없으면 커서 초기화
+          hasMore = false;
+        }
       } else {
         print("에러 발생: ${response.body}");
       }
@@ -80,8 +109,10 @@ class TodoController extends ChangeNotifier {
   }
 
   // ✅ 스크롤을 내릴 때 다음 페이지 로드
+  // ✅ 스크롤을 내릴 때 10개씩 줄여서 데이터 요청
+  // ✅ 스크롤을 내릴 때 다음 페이지 로드 (10개 제외한 나머지부터)
   Future<void> fetchMoreTodos() async {
-    if (isFetchingMore || !hasMore) return;
+    if (isFetchingMore || !hasMore || lastCursorId == null || remainingCount <= 0) return;
 
     isFetchingMore = true;
     notifyListeners();
@@ -95,9 +126,18 @@ class TodoController extends ChangeNotifier {
       return;
     }
 
+    final int fetchSize = remainingCount > 10 ? 10 : remainingCount; // ✅ 남은 개수에서 최대 10개씩 요청
+
+
+    print("📢 [Flutter] fetchMoreTodos() 요청: cursor=$lastCursorId, fetchSize=$fetchSize, remaining=$remainingCount");
+
+
     final Uri requestUrl = Uri.parse(
-      "$serverIp/list?page=${currentPage + 1}&size=$pageSize&type=&keyword=&from=&to=&completed=",
-    );
+        // 커서_기반_코드
+        // "$serverIp/list?page=${currentPage + 1}&size=$pageSize&type=&keyword=&from=&to=&completed=",
+        // 페이징_기반_코드
+        "$serverIp/list2?size=$fetchSize${lastCursorId != null ? '&cursor=$lastCursorId' : ''}"
+        );
 
     try {
       final response = await http.get(
@@ -112,15 +152,24 @@ class TodoController extends ChangeNotifier {
         final responseData = jsonDecode(utf8.decode(response.bodyBytes));
         PageResponseDTO<TodoDTO> pageResponse = PageResponseDTO.fromJson(
           responseData,
-              (json) => TodoDTO.fromJson(json),
+          (json) => TodoDTO.fromJson(json),
         );
 
+        // 커서_기반_코드
         if (pageResponse.dtoList.isNotEmpty) {
           todos.addAll(pageResponse.dtoList);
-          currentPage++; // ✅ 페이지 증가
-          hasMore = pageResponse.dtoList.length == pageSize; // ✅ 다음 페이지 여부 확인
-        }
 
+          lastCursorId = pageResponse.nextCursor; // ✅ 다음 커서 업데이트
+          hasMore = pageResponse.hasNext; // ✅ 다음 데이터 여부 확인
+          remainingCount -= fetchSize; // ✅ 남은 개수에서 요청한 개수만큼 감소
+          print("✅ [Flutter] 전체 개수: ${pageResponse.total}, 남은 개수: $remainingCount");
+          // 페이징_기반_코드
+          // currentPage++; // ✅ 페이지 증가
+          // hasMore = pageResponse.dtoList.length == pageSize; // ✅ 다음 페이지 여부 확인
+        } else {
+          lastCursorId = null; // ✅ 만약 데이터가 없으면 커서 초기화
+          hasMore = false;
+        }
       } else {
         print("에러 발생: ${response.body}");
       }
@@ -131,7 +180,6 @@ class TodoController extends ChangeNotifier {
     isFetchingMore = false;
     notifyListeners();
   }
-
 
   // ✅ Todo 상세 조회 요청 (`GET /api/todo/{tno}`)
   Future<TodoDTO?> fetchTodoDetails(int tno) async {
@@ -160,7 +208,8 @@ class TodoController extends ChangeNotifier {
   }
 
   // ✅ Todo 수정 요청 (`PUT /api/todo/{tno}`)
-  Future<bool> updateTodo(int tno, String title, String writer, DateTime dueDate, bool complete) async {
+  Future<bool> updateTodo(int tno, String title, String writer,
+      DateTime dueDate, bool complete) async {
     String? accessToken = await secureStorage.read(key: "accessToken");
     if (accessToken == null) return false;
 
@@ -170,7 +219,8 @@ class TodoController extends ChangeNotifier {
       "tno": tno,
       "title": title,
       "writer": writer,
-      "dueDate": "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}", // ✅ 날짜 포맷 수정
+      "dueDate":
+          "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}", // ✅ 날짜 포맷 수정
       "complete": complete,
       "complete": complete,
     };
@@ -186,7 +236,6 @@ class TodoController extends ChangeNotifier {
       );
       print("📢 [Flutter] 응답 코드: ${response.statusCode}");
       print("📢 [Flutter] 응답 바디: ${response.body}");
-
 
       if (response.statusCode == 200) {
         print("✅ [Flutter] Todo 수정 성공!");
@@ -239,6 +288,7 @@ class TodoController extends ChangeNotifier {
     }
     return false;
   }
+
   // ✅ 삭제 확인 다이얼로그 (UI에서 호출)
   void confirmDelete(BuildContext context, int tno) {
     showDialog(
@@ -285,7 +335,8 @@ class TodoController extends ChangeNotifier {
     final Map<String, dynamic> postData = {
       "title": title,
       "writer": mid, // ✅ 로그인한 사용자 ID 자동 입력
-      "dueDate": "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}",
+      "dueDate":
+          "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}",
       "complete": complete,
     };
 
@@ -317,7 +368,4 @@ class TodoController extends ChangeNotifier {
     }
     return false;
   }
-
 }
-
-

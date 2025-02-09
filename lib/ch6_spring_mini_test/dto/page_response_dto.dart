@@ -8,6 +8,10 @@ class PageResponseDTO<T> {
   final bool next;
   final List<T> dtoList;
 
+  // ✅ 추가된 멤버 변수
+  final int? nextCursor; // 다음 페이지 요청을 위한 커서 ID
+  final bool hasNext; // 다음 데이터 존재 여부
+
   PageResponseDTO({
     required this.page,
     required this.size,
@@ -17,6 +21,8 @@ class PageResponseDTO<T> {
     required this.prev,
     required this.next,
     required this.dtoList,
+    required this.nextCursor, // ✅ 추가
+    required this.hasNext, // ✅ 추가
   });
 
   factory PageResponseDTO.fromJson(Map<String, dynamic> json, T Function(Map<String, dynamic>) fromJsonT) {
@@ -29,6 +35,8 @@ class PageResponseDTO<T> {
       prev: json['prev'] ?? false, // 기본값 false
       next: json['next'] ?? false, // 기본값 false
       dtoList: (json['dtoList'] as List?)?.map((item) => fromJsonT(item)).toList() ?? [], // `null`이면 빈 리스트 반환
+      nextCursor: json['nextCursor'], // ✅ 추가
+      hasNext: json['hasNext'] ?? false, // ✅ 추가
     );
   }
 }

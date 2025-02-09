@@ -28,6 +28,17 @@ class TodoDTO {
     );
   }
 
+  // ✅ dueDate를 "YYYY-MM-DD HH:mm" 형식으로 변환하는 함수 추가
+  String get formattedDueDate {
+    return "${dueDate.year}-${_twoDigits(dueDate.month)}-${_twoDigits(dueDate.day)} ";
+        // "${_twoDigits(dueDate.hour)}:${_twoDigits(dueDate.minute)}";
+  }
+
+  // ✅ 한 자리 수일 경우 앞에 0을 추가하는 함수
+  String _twoDigits(int n) {
+    return n.toString().padLeft(2, '0');
+  }
+
   Map<String, dynamic> toJson() {
     return {
       "tno": tno,
