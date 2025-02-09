@@ -81,7 +81,7 @@ class _TodosScreenState extends State<TodosScreen> {
         // ✅ 다른 곳을 터치하면 키보드 숨기고 검색 초기화
         if (_searchFocusNode.hasFocus) {
           _searchFocusNode.unfocus();
-          _clearSearch();
+          // _clearSearch();
         }
       },
       child: Scaffold(
