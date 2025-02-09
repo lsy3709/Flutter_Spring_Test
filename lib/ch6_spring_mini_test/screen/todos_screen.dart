@@ -13,23 +13,21 @@ class TodosScreen extends StatefulWidget {
 
 class _TodosScreenState extends State<TodosScreen> {
   late ScrollController _scrollController;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     final todoController = context.read<TodoController>();
 
-    // 빌드 이후에 실행되도록 조정
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TodoController>().fetchTodos();
+      todoController.fetchTodos();
     });
 
     _scrollController = ScrollController();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent &&
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
           !todoController.isFetchingMore) {
-        // ✅ 스크롤이 맨 아래에 도달하면 추가 데이터 요청
         todoController.fetchMoreTodos();
       }
     });
@@ -38,6 +36,7 @@ class _TodosScreenState extends State<TodosScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -47,103 +46,110 @@ class _TodosScreenState extends State<TodosScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Todos 리스트")),
-      body: todoController.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : todoController.todos.isEmpty
-          ? const Center(child: Text("할 일이 없습니다."))
-          : ListView.builder(
-        controller: _scrollController,
-        itemCount: todoController.todos.length + (todoController.hasMore ? 1 : 0), // ✅ 로딩 아이템 추가,
-        itemBuilder: (context, index) {
-
-          // ✅ 마지막 데이터까지 다 불러오면 로딩 UI 제거
-          if (!todoController.hasMore && index == todoController.todos.length) {
-            return const SizedBox(); // ✅ 빈 SizedBox 반환하여 로딩 UI 제거
-          }
-
-          if (index == todoController.todos.length) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: CircularProgressIndicator(), // ✅ 로딩 UI 추가
-              ),
-            );
-          }
-
-          final todo = todoController.todos[index];
-          return ListTile(
-            title: Text(
-                "${index + 1}. ${todo.title}", // ✅ 제목 앞에 순번 번호 추가
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      "ID: ${todo.tno}", // ✅ ID 개별 표시
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
-                    ),
-                    Text(
-                      ", 작성자: ${todo.writer}", // ✅ ID 개별 표시
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
-                    ),
-
-                  ],
-                ),
-                Text(
-                  "작성일: ${todo.formattedDueDate}", // ✅ ID 개별 표시
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
-                ),
-                Icon(
-                  todo.complete ? Icons.check_circle : Icons.circle_outlined,
-                  color: todo.complete ? Colors.green : Colors.grey,
-                  size: 24,
-                ),
-                Text(
-                  todo.complete ? '완료' : '미완료',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: todo.complete ? Colors.black : Colors.grey,
-                    decoration: todo.complete ? TextDecoration.lineThrough : TextDecoration.none,
-                  ),
-                ),
-              ],
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // ✅ 수정 아이콘 버튼 추가
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
+      body: Column(
+        children: [
+          // ✅ 검색 입력창 추가
+          Container(
+            height: 100,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child:  TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: "검색어 입력",
+                border: OutlineInputBorder(),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                  icon: const Icon(Icons.clear),
                   onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      "/todoDetail",
-                      arguments: todo.tno, // ✅ tno 전달
-                    );
+                    _searchController.clear();
+                    todoController.updateSearchParams("TWC", ""); // ✅ 검색어 초기화
                   },
-                ),
-                // ✅ 삭제 버튼 (삭제 확인 다이얼로그 호출)
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => todoController.confirmDelete(context, todo.tno),
-                ),
-              ],
+                )
+                    : null,
+              ),
+              onChanged: (value) {
+                todoController.updateSearchParams("TWC", value); // ✅ 검색어 변경 시 즉시 서버 호출
+              },
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const TodoCreateScreen()),
-          );
-        },
-        child: const Icon(Icons.add),
+          ),
+
+          // ✅ 검색 결과 및 출력 개수 표시
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                todoController.todos.isEmpty
+                    ? "🔍 검색 결과가 없습니다."
+                    : "🔍 검색어: \"${todoController.keyword}\" / 총 ${todoController.remainingCount}개 중 ${todoController.todos.length}개 출력",
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
+              ),
+            ),
+          ),
+
+          // ✅ 리스트 출력
+          Expanded(
+            child: todoController.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : todoController.todos.isEmpty
+                ? const Center(child: Text("할 일이 없습니다."))
+                : ListView.builder(
+              controller: _scrollController,
+              itemCount: todoController.todos.length + (todoController.hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (!todoController.hasMore && index == todoController.todos.length) {
+                  return const SizedBox(); // ✅ 로딩 UI 제거
+                }
+
+                if (index == todoController.todos.length) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                final todo = todoController.todos[index];
+                return ListTile(
+                  title: Text(
+                    "${index + 1}. ${todo.title}",
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text("ID: ${todo.tno}",
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54)),
+                          Text(", 작성자: ${todo.writer}",
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54)),
+                        ],
+                      ),
+                      Text("작성일: ${todo.dueDate}",
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54)),
+                      Icon(
+                        todo.complete ? Icons.check_circle : Icons.circle_outlined,
+                        color: todo.complete ? Colors.green : Colors.grey,
+                        size: 24,
+                      ),
+                      Text(
+                        todo.complete ? '완료' : '미완료',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: todo.complete ? Colors.black : Colors.grey,
+                          decoration: todo.complete ? TextDecoration.lineThrough : TextDecoration.none,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 }
-

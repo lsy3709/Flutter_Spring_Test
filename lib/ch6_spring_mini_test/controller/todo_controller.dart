@@ -29,13 +29,24 @@ class TodoController extends ChangeNotifier {
     return await secureStorage.read(key: "mid"); // 보안 저장소에서 유저 ID 가져오기
   }
 
+  // ✅ 검색 파라미터 추가
+  String searchType = "TWC";  // 기본 검색 타입
+  String keyword = "";
+
+  // ✅ 검색어 변경
+  void updateSearchParams(String type, String newKeyword) {
+    searchType = type;
+    keyword = newKeyword;
+    fetchTodos();  // ✅ 검색어 변경 시 다시 데이터 요청
+  }
+
   // Todos 리스트 조회 요청
   Future<void> fetchTodos() async {
     isLoading = true;
 
     // 커서_기반_코드
     lastCursorId = null; // ✅ 커서를 초기화
-    remainingCount = 0;  //  ✅ 최초에는 전체 개수를 먼저 가져옴
+    remainingCount = 10;  //  ✅ 최초에는 전체 개수를 먼저 가져옴
     // 페이징_기반_코드
     // currentPage = 1;
     hasMore = true; // ✅ 처음 로드할 때 더 많은 데이터가 있다고 가정
@@ -50,7 +61,7 @@ class TodoController extends ChangeNotifier {
       return;
     }
 
-    print("📢 [Flutter] fetchTodos() 최초 호출: cursor=null, 전체 개수 요청");
+    print("📢 [Flutter] fetchTodos() 최초 호출: cursor=null, 전체 개수 요청, 검색어=$keyword");
 
 
     // ✅ PageRequestDTO 데이터를 쿼리 파라미터로 변환
@@ -61,7 +72,9 @@ class TodoController extends ChangeNotifier {
       // "$serverIp/list2?size=10${lastCursorId != null ? '&cursor=$lastCursorId' : ''}",
 
       // ✅ 최초 호출에서는 전체 개수를 가져오기 위해 size=0
-      "$serverIp/list2?size=10",
+      // "$serverIp/list2?size=10",
+      // 검색 기능 추가,
+        "$serverIp/list2?size=10${lastCursorId != null ? '&cursor=$lastCursorId' : ''}&type=$searchType&keyword=$keyword"
 
     );
 
