@@ -119,7 +119,7 @@ class _TodosScreenState extends State<TodosScreen> {
                 child: Text(
                   todoController.todos.isEmpty
                       ? "🔍 검색 결과가 없습니다."
-                      : "🔍 검색어: \"${todoController.keyword}\" / 총 ${todoController.remainingCount + 10}개 중 ${todoController.todos.length}개 출력",
+                      : "🔍 검색어: \"${todoController.keyword}\" / 총 ${todoController.remainingCount }개 중 ${todoController.todos.length}개 출력",
                   style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
                 ),
               ),
