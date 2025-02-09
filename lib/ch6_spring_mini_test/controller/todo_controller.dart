@@ -112,7 +112,12 @@ class TodoController extends ChangeNotifier {
   // ✅ 스크롤을 내릴 때 10개씩 줄여서 데이터 요청
   // ✅ 스크롤을 내릴 때 다음 페이지 로드 (10개 제외한 나머지부터)
   Future<void> fetchMoreTodos() async {
-    if (isFetchingMore || !hasMore || lastCursorId == null || remainingCount <= 0) return;
+    if (isFetchingMore || !hasMore || lastCursorId == null || remainingCount <= 0) {
+      print("🚨 [Flutter] 데이터 로딩 중단: cursor=$lastCursorId, hasMore=$hasMore, remaining=$remainingCount");
+      hasMore = false; // ✅ 데이터가 남아 있지 않으면 로딩 중단
+      notifyListeners();
+      return;
+    }
 
     isFetchingMore = true;
     notifyListeners();
@@ -158,15 +163,19 @@ class TodoController extends ChangeNotifier {
         // 커서_기반_코드
         if (pageResponse.dtoList.isNotEmpty) {
           todos.addAll(pageResponse.dtoList);
-
           lastCursorId = pageResponse.nextCursor; // ✅ 다음 커서 업데이트
-          hasMore = pageResponse.hasNext; // ✅ 다음 데이터 여부 확인
           remainingCount -= fetchSize; // ✅ 남은 개수에서 요청한 개수만큼 감소
+          // ✅ 남은 개수가 0이거나 nextCursor가 null이면 데이터 로딩 중단
+          if (remainingCount <= 0 || pageResponse.nextCursor == null) {
+            hasMore = false; // ✅ 더 이상 데이터 없음
+            lastCursorId = null; // ✅ 커서 초기화
+          }
           print("✅ [Flutter] 전체 개수: ${pageResponse.total}, 남은 개수: $remainingCount");
           // 페이징_기반_코드
           // currentPage++; // ✅ 페이지 증가
           // hasMore = pageResponse.dtoList.length == pageSize; // ✅ 다음 페이지 여부 확인
         } else {
+          print("🚨 [Flutter] 더 이상 데이터 없음, hasMore=false");
           lastCursorId = null; // ✅ 만약 데이터가 없으면 커서 초기화
           hasMore = false;
         }
@@ -221,7 +230,6 @@ class TodoController extends ChangeNotifier {
       "writer": writer,
       "dueDate":
           "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}", // ✅ 날짜 포맷 수정
-      "complete": complete,
       "complete": complete,
     };
 

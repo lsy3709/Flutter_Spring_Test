@@ -56,6 +56,11 @@ class _TodosScreenState extends State<TodosScreen> {
         itemCount: todoController.todos.length + (todoController.hasMore ? 1 : 0), // ✅ 로딩 아이템 추가,
         itemBuilder: (context, index) {
 
+          // ✅ 마지막 데이터까지 다 불러오면 로딩 UI 제거
+          if (!todoController.hasMore && index == todoController.todos.length) {
+            return const SizedBox(); // ✅ 빈 SizedBox 반환하여 로딩 UI 제거
+          }
+
           if (index == todoController.todos.length) {
             return const Center(
               child: Padding(
@@ -67,7 +72,9 @@ class _TodosScreenState extends State<TodosScreen> {
 
           final todo = todoController.todos[index];
           return ListTile(
-            title: Text(todo.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            title: Text(
+                "${index + 1}. ${todo.title}", // ✅ 제목 앞에 순번 번호 추가
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
