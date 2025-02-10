@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../controller/todo_controller.dart';
 
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -77,6 +78,16 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.pushNamed(context, "/todos"); // Todos 화면으로 이동
                 },
                 child: const Text("Todos 조회"),
+              ),
+
+            const SizedBox(height: 10),
+
+            if (loginController.isLoggedIn)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/aiTest"); // Todos 화면으로 이동
+                },
+                child: const Text("Ai Test"),
               ),
           ],
         ),
