@@ -19,6 +19,7 @@ class AiStockScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min, // ✅ 최소 높이 설정
                   children: [
+                    Text("🔍 기간 선택시, 1mo,3mo,6mo,1y 데이터 갯수 파악 후, 플라스크 서버 값 변경 후 하기", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     // ✅ 기간 선택
                     DropdownButton<String>(
                       value: provider.selectedPeriod.isEmpty ? null : provider.selectedPeriod,
