@@ -1,5 +1,6 @@
 import 'package:dart_test/ch6_spring_mini_test/screen/ai_image_screen.dart';
-import 'package:dart_test/ch6_spring_mini_test/screen/details_screen.dart';
+import 'package:dart_test/ch6_spring_mini_test/screen/ai_stock_screen.dart';
+// import 'package:dart_test/ch6_spring_mini_test/screen/details_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/login_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/main_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/signup_screen.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
     '/todoDetail': (context) => TodoDetailScreen(tno: ModalRoute.of(context)!.settings.arguments as int),
         "/todoCreate": (context) => const TodoCreateScreen(),
         "/aiTest": (context) => AiImageScreen(),
+        "/aiTest2": (context) => AiStockScreen(),
 
   },
 

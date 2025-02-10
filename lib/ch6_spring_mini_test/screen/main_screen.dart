@@ -87,8 +87,18 @@ class _MainScreenState extends State<MainScreen> {
                 onPressed: () {
                   Navigator.pushNamed(context, "/aiTest"); // Todos 화면으로 이동
                 },
-                child: const Text("Ai Test"),
+                child: const Text("Ai Test 이미지 분류"),
               ),
+            const SizedBox(height: 10),
+
+            if (loginController.isLoggedIn)
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/aiTest2"); // Todos 화면으로 이동
+                },
+                child: const Text("Ai Test 주가 분석"),
+              ),
+            
           ],
         ),
       ),

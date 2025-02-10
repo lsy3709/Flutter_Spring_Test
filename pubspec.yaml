@@ -38,6 +38,7 @@ dependencies:
   provider: ^6.0.5  # 최신 버전 확인 가능
   flutter_secure_storage: ^9.2.4
   image_picker: ^1.0.4
+  fl_chart: ^0.63.0  # 최신 버전 확인 후 업데이트 가능
 
 dev_dependencies:
   flutter_test:
