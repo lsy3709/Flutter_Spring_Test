@@ -14,59 +14,102 @@ class AiImageScreen extends StatelessWidget {
           builder: (context, controller, child) {
             return Padding(
               padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // ✅ 이미지 미리보기
-                  controller.selectedImage != null
-                      ? Image.file(controller.selectedImage!,
-                      height: 200, width: 200, fit: BoxFit.cover)
-                      : Icon(Icons.image, size: 100, color: Colors.grey),
+              child: SingleChildScrollView( // ✅ 전체 스크롤 가능하도록 설정
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // ✅ 모델 선택 라디오 버튼 (ListView 대신 Column 사용)
+                    Text("🔍 테스트 모델 선택", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Column(
+                      children: [
+                        ListTile(
+                          title: Text("🐶 동물상 테스트"),
+                          leading: Radio<int>(
+                            value: 1,
+                            groupValue: controller.selectedModel,
+                            onChanged: (value) => controller.setModel(value!),
+                          ),
+                        ),
+                        ListTile(
+                          title: Text("🔌 폐가전 테스트"),
+                          leading: Radio<int>(
+                            value: 2,
+                            groupValue: controller.selectedModel,
+                            onChanged: (value) => controller.setModel(value!),
+                          ),
+                        ),
+                        ListTile(
+                          title: Text("🛠️ 공구 테스트"),
+                          leading: Radio<int>(
+                            value: 3,
+                            groupValue: controller.selectedModel,
+                            onChanged: (value) => controller.setModel(value!),
+                          ),
+                        ),
+                      ],
+                    ),
 
-                  SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                  // ✅ 버튼: 갤러리 선택, 카메라 촬영
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        icon: Icon(Icons.photo),
-                        label: Text("갤러리"),
-                        onPressed: () => controller.pickImage(ImageSource.gallery),
+                    // ✅ 이미지 미리보기
+                    controller.selectedImage != null
+                        ? Image.file(controller.selectedImage!,
+                        height: 200, width: 200, fit: BoxFit.cover)
+                        : Icon(Icons.image, size: 100, color: Colors.grey),
+
+                    SizedBox(height: 16),
+
+                    // ✅ 버튼: 갤러리 선택, 카메라 촬영
+                    Wrap( // ✅ Row 대신 Wrap을 사용해 자동 줄바꿈 지원
+                      spacing: 10,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: Icon(Icons.photo),
+                          label: Text("갤러리"),
+                          onPressed: () => controller.pickImage(ImageSource.gallery),
+                        ),
+                        ElevatedButton.icon(
+                          icon: Icon(Icons.camera),
+                          label: Text("카메라"),
+                          onPressed: () => controller.pickImage(ImageSource.camera),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 16),
+
+                    // ✅ 이미지 업로드 버튼
+                    ElevatedButton.icon(
+                      icon: controller.isLoading ? CircularProgressIndicator() : Icon(Icons.upload),
+                      label: Text("이미지 업로드"),
+                      onPressed: controller.isLoading ? null : () => controller.uploadImage(context),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // ✅ 예측 결과 리스트 (shrinkWrap 적용)
+                    if (controller.predictionResult != null)
+                      ListView(
+                        shrinkWrap: true, // ✅ 내부 크기 자동 조정
+                        physics: NeverScrollableScrollPhysics(), // ✅ 내부 스크롤 제거
+                        children: [
+                          Text("📌 예측 결과", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          ListTile(
+                            leading: Icon(Icons.file_present),
+                            title: Text("📄 파일명: ${controller.predictionResult!['filename']}"),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.search),
+                            title: Text("🔍 예측된 클래스: ${controller.predictionResult!['predicted_class']}"),
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.bar_chart),
+                            title: Text("📊 신뢰도: ${controller.predictionResult!['confidence']}"),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 10),
-                      ElevatedButton.icon(
-                        icon: Icon(Icons.camera),
-                        label: Text("카메라"),
-                        onPressed: () => controller.pickImage(ImageSource.camera),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // ✅ 이미지 업로드 버튼
-                  ElevatedButton.icon(
-                    icon: controller.isLoading ? CircularProgressIndicator() : Icon(Icons.upload),
-                    label: Text("이미지 업로드"),
-                    onPressed: controller.isLoading ? null : () => controller.uploadImage(context),
-                  ),
-
-                  SizedBox(height: 20),
-
-                  // ✅ 결과 표시
-                  controller.predictionResult != null
-                      ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("📌 예측 결과", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text("📄 파일명: ${controller.predictionResult!['filename']}"),
-                      Text("🔍 예측된 클래스: ${controller.predictionResult!['predicted_class']}"),
-                      Text("📊 신뢰도: ${controller.predictionResult!['confidence']}"),
-                    ],
-                  )
-                      : Container(),
-                ],
+                  ],
+                ),
               ),
             );
           },

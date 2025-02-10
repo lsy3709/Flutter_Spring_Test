@@ -10,10 +10,17 @@ class AiImageController extends ChangeNotifier {
   File? selectedImage; // 선택한 이미지 파일
   bool isLoading = false; // 로딩 상태
   Map<String, dynamic>? predictionResult; // 예측 결과 저장
+  int selectedModel = 1; // ✅ 기본 모델 (동물상 테스트)
 
   // ✅ 저장된 `accessToken` 가져오기
   Future<String?> getAccessToken() async {
     return await secureStorage.read(key: "accessToken");
+  }
+
+  // ✅ 모델 선택 변경
+  void setModel(int model) {
+    selectedModel = model;
+    notifyListeners();
   }
 
   // ✅ 이미지 선택 (갤러리 / 카메라)
@@ -48,9 +55,12 @@ class AiImageController extends ChangeNotifier {
     }
 
     try {
+      // ✅ 선택한 모델에 따라 서버 API 주소 변경
+      String apiUrl = "http://192.168.219.103:8080/api/ai/predict/$selectedModel";
+
       var request = http.MultipartRequest(
         "POST",
-        Uri.parse("http://192.168.219.103:8080/api/ai/predict"),
+        Uri.parse(apiUrl),
       );
       request.headers["Authorization"] = "Bearer $accessToken"; // ✅ 토큰 추가
       request.files.add(
