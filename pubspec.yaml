@@ -40,6 +40,7 @@ dependencies:
   image_picker: ^1.0.4
   fl_chart: ^0.63.0  # 최신 버전 확인 후 업데이트 가능
   socket_io_client: ^2.0.3+1 # ✅ 소켓 패키지 추가
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:

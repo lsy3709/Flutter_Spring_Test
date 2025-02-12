@@ -13,6 +13,7 @@ class AiImageController extends ChangeNotifier {
   Map<String, dynamic>? predictionResult; // 예측 결과 저장
   int selectedModel = 1; // ✅ 기본 모델 (동물상 테스트)
   IO.Socket? socket; // ✅ Flask-SocketIO 연결
+  File? selectedMedia; // ✅ 선택한 이미지 또는 동영상 파일
 
   AiImageController() {
     _connectToSocket(); // ✅ 소켓 연결
@@ -78,7 +79,100 @@ class AiImageController extends ChangeNotifier {
       notifyListeners(); // UI 업데이트
     }
 
-    // ✅ 서버로 이미지 업로드 및 예측 요청
+  /// ✅ 갤러리 또는 카메라에서 이미지 또는 동영상 선택
+  Future<void> pickMedia(ImageSource source, {bool isVideo = false}) async {
+    final pickedFile = isVideo
+        ? await ImagePicker().pickVideo(source: source)
+        : await ImagePicker().pickImage(source: source);
+
+    if (pickedFile == null) return;
+
+    if (isVideo) {
+      selectedMedia = File(pickedFile.path);
+      // selectedImage = null; // ✅ 동영상 선택 시 이미지 초기화
+    } else {
+      selectedImage = File(pickedFile.path);
+      selectedMedia = File(pickedFile.path);
+      // selectedMedia = null; // ✅ 이미지 선택 시 동영상 초기화
+    }
+
+    notifyListeners();
+  }
+
+  // ✅ 서버로 이미지 또는 동영상 업로드 및 예측 요청
+  Future<void> uploadMedia(BuildContext context) async {
+    if (selectedMedia == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("파일을 선택해주세요!")),
+      );
+      return;
+    }
+
+    isLoading = true;
+    notifyListeners();
+
+    String? accessToken = await getAccessToken(); // 🔹 토큰 가져오기
+    if (accessToken == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("로그인이 필요합니다.")),
+      );
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      int apiModel = (selectedModel == 5) ? 4 :selectedModel;
+      // ✅ 선택한 모델에 따라 서버 API 주소 변경
+      String apiUrl = "http://192.168.219.103:8080/api/ai/predict/$apiModel";
+
+      var request = http.MultipartRequest(
+        "POST",
+        Uri.parse(apiUrl),
+      );
+      request.headers["Authorization"] = "Bearer $accessToken"; // ✅ 토큰 추가
+
+      // ✅ 선택된 파일이 동영상인지 확인
+      bool isVideo = selectedMedia!.path.endsWith(".mp4") ||
+          selectedMedia!.path.endsWith(".avi") ||
+          selectedMedia!.path.endsWith(".mov");
+
+      request.files.add(
+        // await http.MultipartFile.fromPath(isVideo ? "video" : "image", selectedMedia!.path),
+        await http.MultipartFile.fromPath("image", selectedMedia!.path),
+      );
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      var jsonResponse = json.decode(responseBody);
+
+      if (response.statusCode == 200) {
+        predictionResult = jsonResponse;
+
+        // ✅ YOLOv8 이미지 또는 동영상 테스트일 경우에만 소켓으로 Flask에 데이터 전송
+        if (selectedModel == 4 || selectedModel == 5) {
+          socket?.emit(
+              'file_processed', {"image_url": jsonResponse['file_url'],
+            "download_url": jsonResponse['download_url'],
+          });
+
+
+        }
+      } else {
+        throw Exception("서버 오류: ${jsonResponse['error']}");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("예측 실패: $e")),
+      );
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+
+  // ✅ 서버로 이미지 업로드 및 예측 요청
     Future<void> uploadImage(BuildContext context) async {
       if (selectedImage == null) {
         ScaffoldMessenger.of(context).showSnackBar(

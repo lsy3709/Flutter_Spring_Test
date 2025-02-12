@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../controller/ai_image_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AiImageScreen extends StatelessWidget {
   @override
@@ -41,8 +42,10 @@ class AiImageScreen extends StatelessWidget {
                   Wrap(
                     spacing: 10,
                     children: [
-                      _buildActionButton(Icons.photo, "갤러리", () => controller.pickImage(ImageSource.gallery)),
-                      _buildActionButton(Icons.camera, "카메라", () => controller.pickImage(ImageSource.camera)),
+                      _buildActionButton(Icons.photo, "갤러리(이미지)", () => controller.pickMedia(ImageSource.gallery)),
+                      _buildActionButton(Icons.video_library, "갤러리(동영상)", () => controller.pickMedia(ImageSource.gallery, isVideo: true)),
+                      _buildActionButton(Icons.camera, "카메라(이미지)", () => controller.pickMedia(ImageSource.camera)),
+                      _buildActionButton(Icons.videocam, "카메라(동영상)", () => controller.pickMedia(ImageSource.camera, isVideo: true)),
                     ],
                   ),
 
@@ -54,9 +57,10 @@ class AiImageScreen extends StatelessWidget {
                     children: [
                       ElevatedButton.icon(
                         icon: Icon(Icons.upload),
-                        label: Text("이미지 업로드"),
-                        onPressed: controller.isLoading ? null : () => controller.uploadImage(context),
+                        label: Text("파일  업로드"),
+                        onPressed: controller.isLoading ? null : () => controller.uploadMedia(context),
                       ),
+
                       if (controller.isLoading) CircularProgressIndicator(),
                     ],
                   ),
@@ -100,6 +104,31 @@ class AiImageScreen extends StatelessWidget {
                             ),
                           )
                               : Text("URL 없음"),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.download),
+                          title: Text("📥 파일 다운로드"),
+                          subtitle: controller.predictionResult?['download_url'] != null
+                              ? InkWell(
+                            onTap: () async {
+                              // ✅ URL 변환: 127.0.0.1 → 10.0.2.2 (에뮬레이터 사용 시)
+                              String downloadUrl = controller.predictionResult!['download_url'];
+                              downloadUrl = downloadUrl.replaceFirst("127.0.0.1", "10.0.2.2");
+                              print("📡 화면, 최종 다운로드 URL: $downloadUrl"); // ✅ URL 디버깅 로그
+
+                              // ✅ 다운로드 URL 실행 (파일 다운로드)
+                              if (await canLaunchUrl(Uri.parse(downloadUrl))) {
+                                await launchUrl(Uri.parse(downloadUrl), mode: LaunchMode.externalApplication);
+                              } else {
+                                print("🚨 다운로드 URL을 열 수 없습니다.");
+                              }
+                            },
+                            child: Text(
+                              "📂 파일 다운로드",
+                              style: TextStyle(color: Colors.green, decoration: TextDecoration.underline),
+                            ),
+                          )
+                              : Text("다운로드 URL 없음"),
                         ),
                       ],
                     ),
