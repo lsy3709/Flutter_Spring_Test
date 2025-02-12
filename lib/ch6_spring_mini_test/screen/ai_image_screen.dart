@@ -1,3 +1,4 @@
+import 'package:dart_test/ch6_spring_mini_test/screen/download_play_video_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/image_preview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -113,14 +114,28 @@ class AiImageScreen extends StatelessWidget {
                             onTap: () async {
                               // ✅ URL 변환: 127.0.0.1 → 10.0.2.2 (에뮬레이터 사용 시)
                               String downloadUrl = controller.predictionResult!['download_url'];
-                              downloadUrl = downloadUrl.replaceFirst("127.0.0.1", "10.0.2.2");
-                              print("📡 화면, 최종 다운로드 URL: $downloadUrl"); // ✅ URL 디버깅 로그
+                              try {
+                                // ✅ URL 변환: 127.0.0.1 → 10.0.2.2 (에뮬레이터 사용 시)
+                                String formattedUrl = Uri.encodeFull(downloadUrl.replaceFirst("127.0.0.1", "10.0.2.2"));
+                                print("📡 최종 다운로드 URL: $formattedUrl"); // ✅ URL 디버깅 로그
 
-                              // ✅ 다운로드 URL 실행 (파일 다운로드)
-                              if (await canLaunchUrl(Uri.parse(downloadUrl))) {
-                                await launchUrl(Uri.parse(downloadUrl), mode: LaunchMode.externalApplication);
-                              } else {
-                                print("🚨 다운로드 URL을 열 수 없습니다.");
+                                Uri url = Uri.parse(formattedUrl);
+
+                                // ✅ 브라우저에서 강제로 열기 (LaunchMode.externalApplication)
+                                await launchUrl(url, mode: LaunchMode.externalApplication);
+
+                                // ✅ `DownloadAndPlayVideo` 화면으로 이동
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => DownloadAndPlayVideo(videoUrl: formattedUrl),
+                                //   ),
+                                // );
+                              } catch (e) {
+                                print("🚨 다운로드 실행 중 오류 발생: $e");
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("🚨 다운로드 실행 중 오류 발생")),
+                                );
                               }
                             },
                             child: Text(
@@ -128,7 +143,14 @@ class AiImageScreen extends StatelessWidget {
                               style: TextStyle(color: Colors.green, decoration: TextDecoration.underline),
                             ),
                           )
-                              : Text("다운로드 URL 없음"),
+                              :Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("🔄 데이터 처리 중...", style: TextStyle(color: Colors.grey)),
+                              SizedBox(height: 5),
+                              LinearProgressIndicator(), // ✅ 로딩 진행 바 (LinearProgressIndicator)
+                            ],
+                          ),
                         ),
                       ],
                     ),

@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
         "/aiTest": (context) => AiImageScreen(),
         "/aiTest2": (context) => AiStockScreen(),
 
+
   },
 
     );
