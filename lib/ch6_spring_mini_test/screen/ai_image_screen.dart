@@ -121,6 +121,9 @@ class AiImageScreen extends StatelessWidget {
 
                                 Uri url = Uri.parse(formattedUrl);
 
+                                // if (await canLaunchUrl(url)) {
+                                //   await launchUrl(url, mode: LaunchMode.externalApplication);
+                                // }
                                 // ✅ 브라우저에서 강제로 열기 (LaunchMode.externalApplication)
                                 await launchUrl(url, mode: LaunchMode.externalApplication);
 
