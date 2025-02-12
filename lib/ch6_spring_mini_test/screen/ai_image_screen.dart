@@ -6,9 +6,7 @@ import '../controller/ai_image_controller.dart';
 class AiImageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AiImageController(),
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(title: Text("AI 이미지 분류기")),
         body: Consumer<AiImageController>(
           builder: (context, controller, child) {
@@ -42,6 +40,22 @@ class AiImageScreen extends StatelessWidget {
                           title: Text("🛠️ 공구 테스트"),
                           leading: Radio<int>(
                             value: 3,
+                            groupValue: controller.selectedModel,
+                            onChanged: (value) => controller.setModel(value!),
+                          ),
+                        ),
+                        ListTile(
+                          title: Text("🎯 Yolov8 이미지 테스트"),
+                          leading: Radio<int>(
+                            value: 4,
+                            groupValue: controller.selectedModel,
+                            onChanged: (value) => controller.setModel(value!),
+                          ),
+                        ),
+                        ListTile(
+                          title: Text("🎯 Yolov8 동영상 테스트"),
+                          leading: Radio<int>(
+                            value: 5,
                             groupValue: controller.selectedModel,
                             onChanged: (value) => controller.setModel(value!),
                           ),
@@ -106,6 +120,10 @@ class AiImageScreen extends StatelessWidget {
                             leading: Icon(Icons.bar_chart),
                             title: Text("📊 신뢰도: ${controller.predictionResult!['confidence']}"),
                           ),
+                          ListTile(
+                            leading: Icon(Icons.bar_chart),
+                            title: Text("📊 파일 url: ${controller.predictionResult!['file_url']}"),
+                          ),
                         ],
                       ),
                   ],
@@ -114,7 +132,6 @@ class AiImageScreen extends StatelessWidget {
             );
           },
         ),
-      ),
-    );
+      );
   }
 }

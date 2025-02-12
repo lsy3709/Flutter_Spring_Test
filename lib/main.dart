@@ -1,3 +1,4 @@
+import 'package:dart_test/ch6_spring_mini_test/controller/ai_image_controller.dart';
 import 'package:dart_test/ch6_spring_mini_test/my_app.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,7 @@ void main() {
         // 필요한 경우 다른 Provider 추가 가능
         ChangeNotifierProvider(create: (context) => LoginController()), // 로그인 컨트롤러 제공
         ChangeNotifierProvider(create: (context) => TodoController()), // Todos 컨트롤러 추가
+        ChangeNotifierProvider(create: (context) => AiImageController()), // Todos 컨트롤러 추가
       ],
       child: const MyApp(),
     ),

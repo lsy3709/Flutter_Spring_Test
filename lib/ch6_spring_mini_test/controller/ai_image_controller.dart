@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class AiImageController extends ChangeNotifier {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
@@ -11,6 +12,32 @@ class AiImageController extends ChangeNotifier {
   bool isLoading = false; // 로딩 상태
   Map<String, dynamic>? predictionResult; // 예측 결과 저장
   int selectedModel = 1; // ✅ 기본 모델 (동물상 테스트)
+  IO.Socket? socket; // ✅ Flask-SocketIO 연결
+
+  AiImageController() {
+    _connectToSocket(); // ✅ 소켓 연결
+  }
+
+  // ✅ Flask 소켓 연결
+  void _connectToSocket() {
+    socket = IO.io('http://192.168.219.103:5000', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
+    });
+
+    // ✅ Flask에서 YOLO 분석 결과 수신
+    socket!.on('file_processed', (data) {
+      print("✅ Flask에서 받은 데이터: $data");
+
+      predictionResult = data;
+      notifyListeners(); // ✅ UI 업데이트
+    });
+  }
+
+  // ✅ 앱 종료 시 소켓 해제
+  void disconnectSocket() {
+    socket?.disconnect();
+  }
 
   // ✅ 저장된 `accessToken` 가져오기
   Future<String?> getAccessToken() async {
@@ -73,6 +100,10 @@ class AiImageController extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         predictionResult = jsonResponse;
+
+        // ✅ Flask 소켓에 YOLO 분석 요청
+        socket!.emit('file_processed', {"file_url": jsonResponse['file_url']});
+
       } else {
         throw Exception("서버 오류: ${jsonResponse['error']}");
       }
