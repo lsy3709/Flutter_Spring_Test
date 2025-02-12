@@ -22,7 +22,8 @@ class AiImageController extends ChangeNotifier {
   // ✅ Flask 소켓 연결
   void _connectToSocket() {
     if ((selectedModel == 4 || selectedModel == 5) && socket == null) {
-      socket = IO.io('http://10.0.2.2:5000', <String, dynamic>{
+      // socket = IO.io('http://10.0.2.2:5000', <String, dynamic>{
+      socket = IO.io('http://192.168.219.103:5000', <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': true,
       });
