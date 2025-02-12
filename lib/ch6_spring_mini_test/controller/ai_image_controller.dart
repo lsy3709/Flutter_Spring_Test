@@ -20,10 +20,13 @@ class AiImageController extends ChangeNotifier {
 
   // ✅ Flask 소켓 연결
   void _connectToSocket() {
-    socket = IO.io('http://192.168.219.103:5000', <String, dynamic>{
+    socket = IO.io('http://10.0.2.2:5000', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
+
+    socket!.onConnect((_) => print("✅ 소켓 연결됨"));
+    socket!.onDisconnect((_) => print("❌ 소켓 연결 종료"));
 
     // ✅ Flask에서 YOLO 분석 결과 수신
     socket!.on('file_processed', (data) {
