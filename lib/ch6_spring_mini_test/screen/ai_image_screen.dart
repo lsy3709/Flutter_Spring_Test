@@ -1,3 +1,4 @@
+import 'package:dart_test/ch6_spring_mini_test/screen/image_preview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -121,9 +122,32 @@ class AiImageScreen extends StatelessWidget {
                             title: Text("📊 신뢰도: ${controller.predictionResult!['confidence']}"),
                           ),
                           ListTile(
-                            leading: Icon(Icons.bar_chart),
-                            title: Text("📊 파일 url: ${controller.predictionResult!['file_url']}"),
+                            leading: Icon(Icons.image),
+                            title: Text("📊 파일 URL"),
+                            subtitle: controller.predictionResult != null
+                                ? InkWell(
+                              onTap: () {
+                                // ✅ URL 변환: 127.0.0.1 → 10.0.2.2 (에뮬레이터 사용 시)
+                                String fileUrl = controller.predictionResult!['file_url'];
+                                fileUrl = fileUrl.replaceFirst("127.0.0.1", "10.0.2.2");
+                                fileUrl = Uri.encodeFull(fileUrl); // ✅ 공백 및 특수 문자 인코딩
+                                print("📡 화면,최종 변환된 URL: $fileUrl"); // ✅ URL 디버깅용 로그 출력
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ImagePreviewScreen(imageUrl: fileUrl),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                controller.predictionResult!['file_url'],
+                                style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                              ),
+                            )
+                                : Text("URL 없음"),
                           ),
+
                         ],
                       ),
                   ],
