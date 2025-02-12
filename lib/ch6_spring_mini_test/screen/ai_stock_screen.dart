@@ -7,10 +7,10 @@ class AiStockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AiStockProvider(),
+      create: (_) => AiStockController(),
       child: Scaffold(
         appBar: AppBar(title: Text("삼성 주가 예측")),
-        body: Consumer<AiStockProvider>(
+        body: Consumer<AiStockController>(
           builder: (context, provider, child) {
             return SingleChildScrollView(
               child: Padding(
