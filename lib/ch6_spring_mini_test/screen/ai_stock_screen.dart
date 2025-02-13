@@ -24,7 +24,7 @@ class AiStockScreen extends StatelessWidget {
                     DropdownButton<String>(
                       value: provider.selectedPeriod.isEmpty ? null : provider.selectedPeriod,
                       hint: Text("기간 선택"),
-                      items: ["1d", "5d", "1mo", "3mo", "6mo", "1y"].map((period) {
+                      items: ["1d", "5d", ].map((period) {
                         return DropdownMenuItem<String>(
                           value: period,
                           child: Text(period),

@@ -88,7 +88,7 @@ class AiImageScreen extends StatelessWidget {
                             onTap: () {
                               // ✅ URL 변환: 127.0.0.1 → 10.0.2.2 (에뮬레이터 사용 시)
                               String fileUrl = controller.predictionResult!['file_url'];
-                              fileUrl = fileUrl.replaceFirst("127.0.0.1", "10.0.2.2");
+                              // fileUrl = fileUrl.replaceFirst("127.0.0.1", "10.0.2.2");
                               fileUrl = Uri.encodeFull(fileUrl);
                               print("📡 화면, 최종 변환된 URL: $fileUrl"); // ✅ URL 디버깅 로그
 
@@ -116,7 +116,8 @@ class AiImageScreen extends StatelessWidget {
                               String downloadUrl = controller.predictionResult!['download_url'];
                               try {
                                 // ✅ URL 변환: 127.0.0.1 → 10.0.2.2 (에뮬레이터 사용 시)
-                                String formattedUrl = Uri.encodeFull(downloadUrl.replaceFirst("127.0.0.1", "10.0.2.2"));
+                                // String formattedUrl = Uri.encodeFull(downloadUrl.replaceFirst("127.0.0.1", "10.0.2.2"));
+                                String formattedUrl = downloadUrl;
                                 print("📡 최종 다운로드 URL: $formattedUrl"); // ✅ URL 디버깅 로그
 
                                 Uri url = Uri.parse(formattedUrl);

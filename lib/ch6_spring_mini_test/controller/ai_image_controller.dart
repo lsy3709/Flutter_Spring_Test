@@ -145,27 +145,51 @@ class AiImageController extends ChangeNotifier {
 
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
-      var jsonResponse = json.decode(responseBody);
 
-      if (response.statusCode == 200) {
-        predictionResult = jsonResponse;
+      print("📩 서버 응답 코드: ${response.statusCode}");
+      print("📩 서버 응답 본문: $responseBody");
 
-        // ✅ YOLOv8 이미지 또는 동영상 테스트일 경우에만 소켓으로 Flask에 데이터 전송
-        if (selectedModel == 4 || selectedModel == 5) {
-          socket?.emit(
-              'file_processed', {"image_url": jsonResponse['file_url'],
-            "download_url": jsonResponse['download_url'],
-          });
+      try {
+        var jsonResponse = json.decode(responseBody);
 
+        if (response.statusCode == 200) {
+          print("✅ 서버 응답 정상 수신!");
+          predictionResult = jsonResponse;
 
+          if (selectedModel == 4 || selectedModel == 5) {
+
+            // socket?.on('file_processed', (data) {
+            //   print("📩 WebSocket 응답 수신! YOLO 결과:");
+            //   print("   🔗 file_url: ${data['file_url']}");
+            //   print("   🔗 download_url: ${data['download_url']}");
+            //   print(data);
+            //
+            //   // 상태 업데이트
+            //   predictionResult = data;
+            //   notifyListeners();
+            // });
+            print("📡 YOLO 처리 대기 중... WebSocket 응답을 기다립니다.");
+          }
+        } else {
+          print("❌ 서버 오류: ${jsonResponse['error']}");
+          throw Exception("서버 오류: ${jsonResponse['error']}");
         }
-      } else {
-        throw Exception("서버 오류: ${jsonResponse['error']}");
+      } catch (e) {
+        print("❌ JSON 파싱 오류: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("예측 실패: 응답 데이터를 처리하는 중 오류 발생! $e")),
+        );
       }
     } catch (e) {
+      String errorMessage = e.toString().contains("server")
+          ? "서버 오류 발생! 관리자에게 문의하세요."
+          : "예측 실패: $e";
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("예측 실패: $e")),
+        SnackBar(content: Text(errorMessage)),
       );
+
+      print("❌ 오류 발생: $errorMessage");
     }
 
     isLoading = false;
@@ -218,7 +242,7 @@ class AiImageController extends ChangeNotifier {
           // ✅ YOLOv8 이미지 테스트일 경우에만 소켓으로 Flask에 데이터 전송
           if (selectedModel == 4 || selectedModel == 5) {
             socket?.emit(
-                'process_image', {"image_url": jsonResponse['file_url']});
+                'process_image', {"file_url": jsonResponse['file_url']});
           }
         } else {
           throw Exception("서버 오류: ${jsonResponse['error']}");
@@ -232,5 +256,7 @@ class AiImageController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+
+
   }
 
