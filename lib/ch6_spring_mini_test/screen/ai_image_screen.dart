@@ -70,14 +70,32 @@ class AiImageScreen extends StatelessWidget {
 
                   // ✅ 예측 결과 리스트 (shrinkWrap 적용)
                   if (controller.predictionResult?.isNotEmpty == true)
+
                     ListView(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       children: [
-                        Text("📌 예측 결과", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        _buildListTile(Icons.file_present, "📄 파일명", controller.predictionResult?['filename'] ?? 'N/A'),
-                        _buildListTile(Icons.search, "🔍 예측된 클래스", controller.predictionResult?['predicted_class'] ?? 'N/A'),
-                        _buildListTile(Icons.bar_chart, "📊 신뢰도", controller.predictionResult?['confidence'] ?? 'N/A'),
+
+                        // ✅ 예측 결과 (개별 ListTile 사용)
+                          Text("📌 예측 결과", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        if (controller.selectedModel == 1 || controller.selectedModel == 2 || controller.selectedModel == 3)
+                        ListTile(
+                          leading: Icon(Icons.file_present),
+                          title: Text("📄 파일명"),
+                          subtitle: Text(controller.predictionResult?['filename'] ?? 'N/A'),
+                        ),
+                        if (controller.selectedModel == 1 || controller.selectedModel == 2 || controller.selectedModel == 3)
+                        ListTile(
+                          leading: Icon(Icons.search),
+                          title: Text("🔍 예측된 클래스"),
+                          subtitle: Text(controller.predictionResult?['predicted_class'] ?? 'N/A'),
+                        ),
+                        if (controller.selectedModel == 1 || controller.selectedModel == 2 || controller.selectedModel == 3)
+                        ListTile(
+                          leading: Icon(Icons.bar_chart),
+                          title: Text("📊 신뢰도"),
+                          subtitle: Text(controller.predictionResult?['confidence'] ?? 'N/A'),
+                        ),
 
                         // ✅ 파일 URL
                         ListTile(
@@ -106,6 +124,8 @@ class AiImageScreen extends StatelessWidget {
                           )
                               : Text("URL 없음"),
                         ),
+                        // ✅ 파일 다운로드 UI: 라디오 버튼 4, 5번 선택 시만 표시
+                        if (controller.selectedModel == 4 || controller.selectedModel == 5)
                         ListTile(
                           leading: Icon(Icons.download),
                           title: Text("📥 파일 다운로드"),
