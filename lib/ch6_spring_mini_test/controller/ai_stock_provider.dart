@@ -38,7 +38,8 @@ class AiStockController extends ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.219.103:8080/api/ai2/stock-data?period=$selectedPeriod"),
+        // Uri.parse("http://192.168.219.103:8080/api/ai2/stock-data?period=$selectedPeriod"),
+        Uri.parse("http://192.168.123.135:8080/api/ai2/stock-data?period=$selectedPeriod"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $accessToken" // ✅ 토큰 추가
