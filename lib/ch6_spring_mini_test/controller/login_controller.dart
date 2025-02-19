@@ -11,7 +11,7 @@ class LoginController extends ChangeNotifier {
 
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage(); // 보안 저장소
   // final String serverIp = "http://192.168.219.103:8080"; // 서버 주소
-  final String serverIp = "http://192.168.123.135:8080"; // 서버 주소 변경 필요
+  final String serverIp = "http://10.100.201.87:8080"; // 서버 주소 변경 필요
   bool isLoading = false; // 로그인 로딩 상태
   bool isLoggedIn = false; // 로그인 여부
 

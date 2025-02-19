@@ -50,8 +50,8 @@ class _AiImageScreenState extends State<AiImageScreen> {
   }
 
   String updateUrl(String originalUrl) {
-    if (originalUrl.contains("127.0.0.1:5000")) {
-      return originalUrl.replaceFirst("127.0.0.1:5000", "10.0.2.2:5000");
+    if (originalUrl.contains("localhost:5000")) {
+      return originalUrl.replaceFirst("localhost:5000", "10.100.201.87:5000");
     }
     return originalUrl;
   }
