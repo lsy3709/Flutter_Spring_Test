@@ -4,7 +4,9 @@ class SocketService {
   IO.Socket? socket;
 
   void connectToSocket() {
-    socket = IO.io('http://192.168.219.103:5000', <String, dynamic>{
+
+    // socket = IO.io('http://192.168.219.103:5000', <String, dynamic>{
+    socket = IO.io('http:// 192.168.123.135:5000', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true, // ✅ 수동 연결
     });
