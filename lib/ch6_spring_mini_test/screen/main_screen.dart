@@ -46,13 +46,19 @@ class _MainScreenState extends State<MainScreen> {
             ),
         ],),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView( // 스크롤이 있는 뷰로 교체
+          padding: const EdgeInsets.all(16), // 여백 추가
+        // child: Column(
+        //   mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              userId != null ? "환영합니다, $userId님!" : "로그인이 필요합니다.",
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Center(
+              child: Text(
+                userId != null ? "환영합니다, $userId님!" : "로그인이 필요합니다.",
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
             ),
+            const SizedBox(height: 20),
             const Center(child: FlutterLogo(size: 100)),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -60,7 +66,7 @@ class _MainScreenState extends State<MainScreen> {
               child: const Text('회원 가입'),
             ),
             const SizedBox(height: 10),
-            OutlinedButton(
+            ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/login'),
               child: const Text('로그인'),
             ),
@@ -98,6 +104,15 @@ class _MainScreenState extends State<MainScreen> {
                 },
                 child: const Text("Ai Test 주가 분석"),
               ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/ex1_material'),
+              child: const Text('샘플 디자인 머터리얼 앱바, 하단 네비게이션바 '),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/ex2_cupertino'),
+              child: const Text('샘플 디자인 쿠퍼티노 ios 스타일 '),
+            ),
+          
             
           ],
         ),
