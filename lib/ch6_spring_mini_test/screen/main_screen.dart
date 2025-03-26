@@ -112,6 +112,10 @@ class _MainScreenState extends State<MainScreen> {
               onPressed: () => Navigator.pushNamed(context, '/ex2_cupertino'),
               child: const Text('샘플 디자인 쿠퍼티노 ios 스타일 '),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/ex3_responsive_navbar'),
+              child: const Text('샘플 디자인 responsive navbar 스타일 '),
+            ),
           
             
           ],

@@ -2,6 +2,7 @@ import 'package:dart_test/ch6_spring_mini_test/screen/ai_image_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/ai_stock_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/ex_sample_design/cupertino_style_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/ex_sample_design/material_home_screen.dart';
+import 'package:dart_test/ch6_spring_mini_test/screen/ex_sample_design/responsive_navbar_screen.dart';
 // import 'package:dart_test/ch6_spring_mini_test/screen/details_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/login_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/main_screen.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         "/aiTest2": (context) => AiStockScreen(),
         "/ex1_material": (context) => MaterialHomePage(),
         "/ex2_cupertino": (context) => CupertinoTabWrapper(),
+        "/ex3_responsive_navbar": (context) => ResponsiveNavBarPage(),
 
 
   },
