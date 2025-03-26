@@ -116,6 +116,10 @@ class _MainScreenState extends State<MainScreen> {
               onPressed: () => Navigator.pushNamed(context, '/ex3_responsive_navbar'),
               child: const Text('샘플 디자인 responsive navbar 스타일 '),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/public_data_ex1_walking'),
+              child: const Text('공공 데이터 연동1-부산도보여행 '),
+            ),
           
             
           ],

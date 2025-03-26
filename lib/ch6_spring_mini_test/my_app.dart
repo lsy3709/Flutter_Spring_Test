@@ -6,6 +6,7 @@ import 'package:dart_test/ch6_spring_mini_test/screen/ex_sample_design/responsiv
 // import 'package:dart_test/ch6_spring_mini_test/screen/details_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/login_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/main_screen.dart';
+import 'package:dart_test/ch6_spring_mini_test/screen/public_data_screen/walking_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/signup_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/splash_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/todo_create_screen.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         "/ex1_material": (context) => MaterialHomePage(),
         "/ex2_cupertino": (context) => CupertinoTabWrapper(),
         "/ex3_responsive_navbar": (context) => ResponsiveNavBarPage(),
+        "/public_data_ex1_walking": (context) => WalkingScreen(),
 
 
   },

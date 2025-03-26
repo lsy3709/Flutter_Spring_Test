@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'ch6_spring_mini_test/controller/login_controller.dart';
+import 'ch6_spring_mini_test/controller/public_data_network/walking_controller.dart';
 import 'ch6_spring_mini_test/controller/signup_controller.dart';
 import 'ch6_spring_mini_test/controller/todo_controller.dart';
 
@@ -16,6 +17,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => LoginController()), // 로그인 컨트롤러 제공
         ChangeNotifierProvider(create: (context) => TodoController()), // Todos 컨트롤러 추가
         ChangeNotifierProvider(create: (context) => AiImageController()), // Todos 컨트롤러 추가
+        ChangeNotifierProvider(create: (_) => WalkingController()),// 공공데이터, 도보1
       ],
       child: const MyApp(),
     ),
