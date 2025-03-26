@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class ItemModel2 {
+class FoodItem {
   final String? mainTitle;
   final String? title;
   final String? image;
 
-  ItemModel2({this.mainTitle, this.title, this.image});
+  FoodItem({this.mainTitle, this.title, this.image});
 
-  factory ItemModel2.fromJson(Map<String, dynamic> json) {
-    return ItemModel2(
+  factory FoodItem.fromJson(Map<String, dynamic> json) {
+    return FoodItem(
       mainTitle: json['MAIN_TITLE'],
       title: json['TITLE'],
       image: json['MAIN_IMG_NORMAL'],
@@ -18,14 +18,14 @@ class ItemModel2 {
   }
 }
 
-class WalkingController with ChangeNotifier {
-  final List<ItemModel2> _items = [];
+class FoodController with ChangeNotifier {
+  final List<FoodItem> _items = [];
   bool _isLoading = false;
 
-  List<ItemModel2> get items => _items;
+  List<FoodItem> get items => _items;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchWalkingData() async {
+  Future<void> fetchFoodData() async {
     _isLoading = true;
     notifyListeners();
 
@@ -38,7 +38,7 @@ class WalkingController with ChangeNotifier {
 
     final uri = Uri.https(
       'apis.data.go.kr',
-      '/6260000/WalkingService/getWalkingKr',
+      '/6260000/FoodService/getFoodKr',
       queryParams,
     );
 
@@ -46,14 +46,14 @@ class WalkingController with ChangeNotifier {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-        final dynamic walkingData = decoded['getWalkingKr'];
+        final dynamic foodData = decoded['getFoodKr'];
 
-        if (walkingData is Map<String, dynamic> && walkingData['item'] is List) {
-          final List<dynamic> itemList = walkingData['item'];
+        if (foodData is Map<String, dynamic> && foodData['item'] is List) {
+          final List<dynamic> itemList = foodData['item'];
           _items.clear();
-          _items.addAll(itemList.map((e) => ItemModel2.fromJson(e)).toList());
+          _items.addAll(itemList.map((e) => FoodItem.fromJson(e)).toList());
         } else {
-          debugPrint('데이터 구조가 예상과 다릅니다: ${jsonEncode(walkingData)}');
+          debugPrint('데이터 구조가 예상과 다릅니다: ${jsonEncode(foodData)}');
         }
       } else {
         debugPrint('서버 오류: ${response.statusCode}');
@@ -65,4 +65,5 @@ class WalkingController with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
 }

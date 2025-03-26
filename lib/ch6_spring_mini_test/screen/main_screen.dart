@@ -120,6 +120,10 @@ class _MainScreenState extends State<MainScreen> {
               onPressed: () => Navigator.pushNamed(context, '/public_data_ex1_walking'),
               child: const Text('공공 데이터 연동1-부산도보여행 '),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/public_data_ex2_food'),
+              child: const Text('공공 데이터 연동2-부산맛집정보 '),
+            ),
           
             
           ],
