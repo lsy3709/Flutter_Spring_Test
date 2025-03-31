@@ -104,22 +104,27 @@ class _MainScreenState extends State<MainScreen> {
                 },
                 child: const Text("Ai Test 주가 분석"),
               ),
+            if (loginController.isLoggedIn)
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/ex1_material'),
               child: const Text('샘플 디자인 머터리얼 앱바, 하단 네비게이션바 '),
             ),
+            if (loginController.isLoggedIn)
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/ex2_cupertino'),
               child: const Text('샘플 디자인 쿠퍼티노 ios 스타일 '),
             ),
+            if (loginController.isLoggedIn)
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/ex3_responsive_navbar'),
               child: const Text('샘플 디자인 responsive navbar 스타일 '),
             ),
+            if (loginController.isLoggedIn)
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/public_data_ex1_walking'),
               child: const Text('공공 데이터 연동1-부산도보여행 '),
             ),
+            if (loginController.isLoggedIn)
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/public_data_ex2_food'),
               child: const Text('공공 데이터 연동2-부산맛집정보 '),

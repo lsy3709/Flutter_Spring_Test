@@ -79,8 +79,8 @@ class AiImageController extends ChangeNotifier {
     try {
       int apiModel = (selectedModel == 5) ? 4 :selectedModel;
       // ✅ 선택한 모델에 따라 서버 API 주소 변경
-      String apiUrl = "http://192.168.219.103:8080/api/ai/predict/$apiModel";
-      // String apiUrl = "http://10.100.201.87:8080/api/ai/predict/$apiModel";
+      // String apiUrl = "http://192.168.219.103:8080/api/ai/predict/$apiModel";
+      String apiUrl = "http://10.100.201.87:8080/api/ai/predict/$apiModel";
 
       var request = http.MultipartRequest(
         "POST",
