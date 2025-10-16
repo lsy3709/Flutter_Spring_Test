@@ -8,8 +8,8 @@ import '../dto/todo_dto.dart';
 
 class TodoController extends ChangeNotifier {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
-  // final String serverIp = "http://192.168.219.103:8080/api/todo"; // 서버 주소
-  final String serverIp = "http://10.100.201.87:8080/api/todo"; // 서버 주소
+  final String serverIp = "http://192.168.219.103:8080/api/todo"; // 서버 주소
+  // final String serverIp = "http://10.100.201.87:8080/api/todo"; // 서버 주소
 
   List<TodoDTO> todos = [];
   bool isLoading = false;
@@ -75,7 +75,7 @@ class TodoController extends ChangeNotifier {
       // ✅ 최초 호출에서는 전체 개수를 가져오기 위해 size=0
       // "$serverIp/list2?size=10",
       // 검색 기능 추가,
-        "$serverIp/list2?size=10${lastCursorId != null ? '&cursor=$lastCursorId' : ''}&type=$searchType&keyword=$keyword"
+        "$serverIp/list?size=10${lastCursorId != null ? '&cursor=$lastCursorId' : ''}&type=$searchType&keyword=$keyword"
 
     );
 

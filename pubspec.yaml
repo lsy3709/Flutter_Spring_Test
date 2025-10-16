@@ -34,16 +34,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  http: ^0.13.6  # 최신 버전 확인 가능
-  provider: ^6.0.5  # 최신 버전 확인 가능
-  flutter_secure_storage: ^9.2.4
-  image_picker: ^1.0.4
-  fl_chart: ^0.63.0  # 최신 버전 확인 후 업데이트 가능
+  http: ^1.2.1                  # 👈 Updated
+  provider: ^6.1.2              # 👈 Updated
+  flutter_secure_storage: ^9.2.2  # 👈 Updated
+  image_picker: ^1.1.2          # 👈 Updated
+  fl_chart: ^0.68.0             # 👈 Updated
   socket_io_client: ^2.0.3+1 # ✅ 소켓 패키지 추가
   url_launcher: ^6.3.1
   video_player: ^2.9.2
   dio: ^5.8.0+1
-  path_provider: ^2.1.5
+  path_provider: ^2.1.3         # 👈 Updated
+  permission_handler: ^11.3.1   # 👈 Updated (This is the key fix)
 
 dev_dependencies:
   flutter_test:
