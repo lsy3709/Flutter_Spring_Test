@@ -1,5 +1,6 @@
 import 'package:dart_test/ch6_spring_mini_test/screen/download_play_video_screen.dart';
 import 'package:dart_test/ch6_spring_mini_test/screen/image_preview_screen.dart';
+import 'package:dart_test/ch6_spring_mini_test/screen/downloaded_files_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -238,7 +239,27 @@ class _AiImageScreenState extends State<AiImageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("AI 이미지 분류기")),
+      appBar: AppBar(
+        title: Text("AI 이미지 분류기"),
+        actions: [
+          // 다운로드 목록 버튼
+          IconButton(
+            icon: Badge(
+              label: Text('📂'),
+              child: Icon(Icons.folder),
+            ),
+            tooltip: '다운로드한 파일 보기',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DownloadedFilesScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: Consumer<AiImageController>(
         builder: (context, controller, child) {
           return Padding(
